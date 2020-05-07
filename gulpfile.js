@@ -4,6 +4,7 @@ const sass = require('gulp-sass');
 const sourcemaps = require('gulp-sourcemaps');
 const autoprefixer = require('gulp-autoprefixer');
 const cleanCSS = require('gulp-clean-css');
+let babel = require('gulp-babel')
 const uglify = require('gulp-uglify');
 const del = require('del');
 const browserSync = require('browser-sync').create();
@@ -25,17 +26,18 @@ function styles() {
 }
 
 function scripts() {
-  return gulp.src('./src/js/**')
+  return gulp.src('./src/scripts/js/**')
     .pipe(concat('script.min.js'))
-    .pipe(uglify({
-      toplevel: true
+    .pipe(babel({
+      presets: ['@babel/env']
     }))
+    .pipe(uglify())
     .pipe(gulp.dest('./src/scripts'))
     .pipe(browserSync.stream())
 }
 
 function clean() {
-  return del(['src/scripts/*'])
+  return del(['src/scripts/*.js'])
 }
 
 function watch() {
@@ -46,7 +48,7 @@ function watch() {
   });
 
   gulp.watch('./src/scss/**/*.scss', styles)
-  gulp.watch('./src/js/**/*.js', scripts)
+  gulp.watch('./src/scripts/js/**/*.js', scripts)
   gulp.watch('./*.html').on('change', browserSync.reload);
 }
 
